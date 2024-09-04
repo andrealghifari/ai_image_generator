@@ -19,15 +19,31 @@ const CreatePost = () => {
   };
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
-    setForm({...form, prompt : randomPrompt});
+    setForm({ ...form, prompt: randomPrompt });
   };
-  const generateImage = () => {
-    setgeneratingImg(true);
-
-    setTimeout(() => {
-      setgeneratingImg(false);
-    }, 3000);
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setgeneratingImg(true);
+        const response = await fetch(`http://localhost:8080/api/v1/dalle`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
+        const data = await response.json();
+        console.log(data);
+        // setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (error) {
+        alert(error);
+        // console.log(error);
+      } finally {
+        setgeneratingImg(false);
+      }
+    } else {
+      alert("Please enter the prompt");
+    }
   };
+  console.log(form.prompt);
   return (
     <section className="max-w-7xl mx-auto">
       <div>
